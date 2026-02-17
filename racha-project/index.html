@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map - Pro Pill UI</title>
+    <title>Racha Map - Enhanced UI</title>
     
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
@@ -38,50 +38,42 @@
         .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; padding: 0; }
         .btn-circle.active { background: var(--apple-green) !important; border-color: rgba(52, 199, 89, 0.4); }
 
-        /* --- Static Main Bar --- */
+        /* --- 🛑 გაზრდილი და სტატიკური Main Bar --- */
         .main-bar { 
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%); 
-            z-index: 10; display: flex; align-items: center; gap: 12px; 
+            z-index: 10; display: flex; align-items: center; gap: 15px; 
             background: var(--glass); backdrop-filter: blur(40px); 
-            padding: 5px 20px; border-radius: 100px; border: 0.5px solid var(--border); 
-            color: var(--text); width: 320px; justify-content: space-between;
+            padding: 8px 25px; border-radius: 100px; border: 0.5px solid var(--border); 
+            color: var(--text); width: 380px; height: 32px; justify-content: space-between;
         }
 
-        /* --- Pill-Shaped Auth Modal --- */
-        #authModal { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 290px; z-index: 100; display: none; flex-direction: column; gap: 16px; 
+        /* --- 🛑 ლუპის სიმბოლოს ცენტრირება --- */
+        .mapboxgl-ctrl-geocoder { 
+            background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; 
+            width: 160px !important; height: 28px !important; display: flex !important; 
+            align-items: center !important; justify-content: center !important; 
+            box-shadow: none !important; position: relative !important;
         }
-        
+        .mapboxgl-ctrl-geocoder--input { 
+            color: #fff !important; padding: 0 10px 0 35px !important; 
+            height: 100% !important; font-size: 11px !important; background: none !important;
+        }
+        .mapboxgl-ctrl-geocoder--icon-search { 
+            left: 12px !important; top: 50% !important; transform: translateY(-50%) !important; 
+            fill: #fff !important; width: 14px !important; height: 14px !important; opacity: 0.7;
+        }
+
+        /* --- Auth Modal --- */
+        #authModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 290px; z-index: 100; display: none; flex-direction: column; gap: 16px; }
         .close-btn { position: absolute; top: -50px; left: 50%; transform: translateX(-50%); cursor: pointer; color: #fff; transition: 0.2s ease; }
-        .close-btn:hover { transform: translateX(-50%) scale(1.15); } 
-
-        .modal-input { 
-            background: var(--glass) !important; backdrop-filter: blur(30px);
-            border: 0.5px solid var(--border) !important; border-radius: 100px;
-            padding: 12px 20px; color: var(--text) !important; outline: none; font-size: 12px; 
-        }
-        
-        .modal-btn { 
-            background: var(--glass); backdrop-filter: blur(30px);
-            color: var(--text); border: 0.5px solid var(--border); 
-            padding: 12px; border-radius: 100px; 
-            font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 13px;
-        }
+        .modal-input { background: var(--glass) !important; backdrop-filter: blur(30px); border: 0.5px solid var(--border) !important; border-radius: 100px; padding: 12px 20px; color: var(--text) !important; outline: none; font-size: 12px; }
+        .modal-btn { background: var(--glass); backdrop-filter: blur(30px); color: var(--text); border: 0.5px solid var(--border); padding: 12px; border-radius: 100px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 13px; }
         .modal-btn:hover { background: var(--apple-green); border-color: rgba(52, 199, 89, 0.4); }
 
         .auth-links { display: flex; justify-content: space-between; padding: 0 15px; font-size: 9px; color: var(--text); opacity: 0.6; }
-        .auth-links span { cursor: pointer; }
-
-        /* Search & Navigation */
-        .mapboxgl-ctrl-geocoder { background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; width: 130px !important; height: 26px !important; display: flex !important; align-items: center !important; box-shadow: none !important; }
-        .mapboxgl-ctrl-geocoder--input { color: #fff !important; padding: 0 10px 0 30px !important; font-size: 10px !important; }
-        .mapboxgl-ctrl-geocoder--icon-search { left: 8px !important; fill: #fff !important; width: 14px !important; }
-        
-        .nav-links { display: flex; gap: 10px; font-size: 9px; font-weight: 600; opacity: 0.8; }
+        .nav-links { display: flex; gap: 12px; font-size: 10px; font-weight: 600; opacity: 0.8; }
         .material-symbols-outlined { font-variation-settings: 'wght' 200; font-size: 18px; }
         
-        /* Sidebar Components */
         .layer-group { position: relative; display: flex; align-items: center; }
         .sub-layers { position: absolute; left: 42px; display: flex; gap: 6px; opacity: 0; visibility: hidden; transition: 0.4s; }
         .layer-group:hover .sub-layers { opacity: 1; visibility: visible; left: 48px; }
@@ -118,7 +110,7 @@
     </div>
 
     <div class="main-bar">
-        <div style="display:flex; align-items:center; gap:6px; font-size:9px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:10px;">
             Loc <label style="position:relative; display:inline-block; width:26px; height:12px;">
                 <input type="checkbox" onchange="getUserLoc(this)" style="opacity:0; width:0; height:0;"><span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.1); border-radius:34px; transition:.4s;"></span>
                 <span id="slider-dot" style="position:absolute; height:8px; width:8px; left:2px; bottom:2px; background:white; border-radius:50%; transition:.4s;"></span>
@@ -160,9 +152,7 @@
         window.switchAuth = () => { isLogin = !isLogin; updateAuthTexts(); };
 
         function updateAuthTexts() {
-            const btn = document.getElementById('authBtn');
-            const forgot = document.getElementById('forgotText');
-            const sw = document.getElementById('switchText');
+            const btn = document.getElementById('authBtn'), forgot = document.getElementById('forgotText'), sw = document.getElementById('switchText');
             btn.innerText = isLogin ? 'Login' : (currentLang === 'ka' ? 'რეგისტრაცია' : 'Sign Up');
             forgot.innerText = currentLang === 'ka' ? 'დაგავიწყდა პაროლი?' : 'Forgot Password?';
             sw.innerText = currentLang === 'ka' ? (isLogin ? 'რეგისტრაცია' : 'შესვლა') : (isLogin ? 'Sign Up' : 'Login');
@@ -186,14 +176,11 @@
         document.getElementById('geocoder-box').appendChild(geocoder.onAdd(map));
 
         window.toggleTheme = () => { document.body.classList.toggle('light-mode-active'); document.getElementById('themeIcon').innerText = document.body.classList.contains('light-mode-active') ? 'dark_mode' : 'light_mode'; };
-        
         window.toggleLanguage = () => { 
             currentLang = currentLang === 'ka' ? 'en' : 'ka';
             document.getElementById('langBtn').innerText = currentLang === 'ka' ? 'GE' : 'EN';
             document.getElementById('nav-all').innerText = currentLang === 'ka' ? 'ყველა' : 'ALL';
             document.getElementById('nav-hotels').innerText = currentLang === 'ka' ? 'სასტუმროები' : 'HOTELS';
-            document.getElementById('email').placeholder = currentLang === 'ka' ? 'ელ-ფოსტა' : 'Email';
-            document.getElementById('password').placeholder = currentLang === 'ka' ? 'პაროლი' : 'Password';
             updateAuthTexts(); updateMapLang();
         };
 
