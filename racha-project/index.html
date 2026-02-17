@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map - Premium Auth UI</title>
+    <title>Racha Map - Ultimate Edition</title>
     
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
@@ -16,63 +16,46 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap');
 
         :root {
-            --glass: rgba(15, 15, 15, 0.45); 
+            --glass: rgba(10, 10, 10, 0.4); 
             --border: rgba(255, 255, 255, 0.15);
             --text: #ffffff;
             --active-green: rgba(52, 199, 89, 0.45);
         }
 
+        .light-mode-active { --glass: rgba(255, 255, 255, 0.3); --border: rgba(0, 0, 0, 0.1); --text: #1d1d1f; }
+
         body { margin: 0; padding: 0; font-family: "Noto Sans Georgian", sans-serif; background: #000; overflow: hidden; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; z-index: 1; }
         .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
 
-        /* --- Controls --- */
+        /* --- UI Controls --- */
         .side-controls, .right-controls { position: absolute; top: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
         .side-controls { left: 15px; }
         .right-controls { right: 15px; }
         .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; padding: 0; }
-        .btn-circle.active { background: var(--active-green) !important; }
+        .btn-circle.active { background: var(--active-green) !important; color: white; }
 
-        /* --- Auth Modal (With X Fix) --- */
-        #authModal { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 280px; padding: 40px 30px 30px 30px; border-radius: 30px; 
-            background: rgba(20, 20, 20, 0.65); backdrop-filter: blur(60px); 
-            border: 0.5px solid var(--border); z-index: 100; display: none; 
-            flex-direction: column; gap: 18px; color: #fff; box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
-        }
-        
-        /* 🛑 X Close Button */
-        .close-btn {
-            position: absolute; top: 15px; right: 15px;
-            cursor: pointer; color: rgba(255,255,255,0.4);
-            transition: transform 0.4s ease, color 0.3s ease;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .close-btn:hover {
-            color: #ff3b30; /* გაწითლება */
-            transform: rotate(90deg); /* გადატრიალება */
-        }
+        /* --- Weather & Layers --- */
+        .layer-group { position: relative; display: flex; align-items: center; }
+        .sub-layers { position: absolute; left: 42px; display: flex; gap: 6px; opacity: 0; visibility: hidden; transition: 0.4s; }
+        .layer-group:hover .sub-layers { opacity: 1; visibility: visible; left: 48px; }
+        .weather-container { position: relative; }
+        .weather-widget { position: absolute; left: 42px; top: 0; width: 110px; background: var(--glass); backdrop-filter: blur(35px); border-radius: 18px; padding: 10px; opacity: 0; visibility: hidden; transition: 0.4s; color: var(--text); border: 0.5px solid var(--border); }
+        .weather-container:hover .weather-widget { opacity: 1; visibility: visible; left: 48px; }
 
-        .modal-input { 
-            background: rgba(255,255,255,0.06) !important; border: 0.5px solid var(--border) !important; 
-            border-radius: 14px; padding: 12px 15px; color: #fff !important; outline: none; font-size: 13px; 
-        }
-        
-        input:-webkit-autofill {
-            -webkit-text-fill-color: white !important;
-            -webkit-box-shadow: 0 0 0px 1000px rgba(30, 30, 30, 0.5) inset !important;
-        }
-
-        .modal-btn { 
-            background: var(--active-green) !important; color: #fff !important; 
-            border: 0.5px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; 
-            font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .modal-btn:hover { background: rgba(52, 199, 89, 0.6) !important; transform: scale(1.02); }
-
-        /* Main Bar */
+        /* --- Main Bar --- */
         .main-bar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; align-items: center; gap: 15px; background: var(--glass); backdrop-filter: blur(40px); padding: 5px 15px; border-radius: 100px; border: 0.5px solid var(--border); color: var(--text); }
+        .nav-links { display: flex; gap: 10px; font-size: 10px; font-weight: 600; opacity: 0.8; }
+
+        /* --- Auth Modal --- */
+        #authModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; padding: 40px 30px 30px 30px; border-radius: 30px; background: rgba(20, 20, 20, 0.65); backdrop-filter: blur(60px); border: 0.5px solid var(--border); z-index: 100; display: none; flex-direction: column; gap: 18px; color: #fff; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .close-btn { position: absolute; top: 15px; right: 15px; cursor: pointer; color: rgba(255,255,255,0.4); transition: transform 0.4s ease, color 0.3s ease; }
+        .close-btn:hover { color: #ff3b30; transform: rotate(90deg); }
+        .modal-input { background: rgba(255,255,255,0.06) !important; border: 0.5px solid var(--border) !important; border-radius: 14px; padding: 12px; color: #fff !important; outline: none; font-size: 13px; }
+        input:-webkit-autofill { -webkit-text-fill-color: white !important; -webkit-box-shadow: 0 0 0px 1000px rgba(30, 30, 30, 0.5) inset !important; }
+        .modal-btn { background: var(--active-green) !important; color: #fff !important; border: 0.5px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+
+        /* Search Box */
         .mapboxgl-ctrl-geocoder { background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; width: 140px !important; height: 28px !important; display: flex !important; align-items: center !important; box-shadow: none !important; }
         .mapboxgl-ctrl-geocoder--input { color: #fff !important; padding: 0 30px !important; height: 28px !important; font-size: 10px !important; }
         .material-symbols-outlined { font-variation-settings: 'wght' 200; font-size: 18px; }
@@ -84,11 +67,40 @@
 
     <div class="side-controls">
         <button class="btn-circle" onclick="toggleTheme()"><span class="material-symbols-outlined" id="themeIcon">light_mode</span></button>
-        <button class="btn-circle" id="masterLayerBtn" onclick="toggleAllLayers(this)"><span class="material-symbols-outlined">layers</span></button>
+        <div class="weather-container">
+            <button class="btn-circle"><span id="btnTemp" style="font-size: 11px; font-weight: 700;">--°</span></button>
+            <div class="weather-widget">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="widgetTemp" style="font-size: 16px; font-weight: 500;">--°C</span>
+                    <span class="material-symbols-outlined" style="color:#ffbc00; font-size: 16px;">wb_sunny</span>
+                </div>
+                <div style="font-size: 9px; opacity: 0.7; margin-top: 4px;"><span id="humidity">--%</span> Humidity</div>
+            </div>
+        </div>
+        <div class="layer-group">
+            <button class="btn-circle" id="masterLayerBtn" onclick="toggleAllLayers(this)"><span class="material-symbols-outlined">layers</span></button>
+            <div class="sub-layers">
+                <button class="btn-circle" onclick="toggleSingleLayer('admin', this)"><span class="material-symbols-outlined">map</span></button>
+                <button class="btn-circle active" id="btn-place" onclick="toggleSingleLayer('place', this)"><span class="material-symbols-outlined">home</span></button>
+                <button class="btn-circle" onclick="toggleSingleLayer('3d-buildings', this)"><span class="material-symbols-outlined">apartment</span></button>
+            </div>
+        </div>
+        <button class="btn-circle" onclick="map.zoomIn()"><span class="material-symbols-outlined">add</span></button>
+        <button class="btn-circle" onclick="map.zoomOut()"><span class="material-symbols-outlined">remove</span></button>
     </div>
 
     <div class="main-bar">
+        <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+            Loc <label style="position:relative; display:inline-block; width:28px; height:14px;">
+                <input type="checkbox" onchange="getUserLoc(this)" style="opacity:0; width:0; height:0;"><span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.1); border-radius:34px; transition:.4s;"></span>
+                <span id="slider-dot" style="position:absolute; height:10px; width:10px; left:2px; bottom:2px; background:white; border-radius:50%; transition:.4s;"></span>
+            </label>
+        </div>
         <div id="geocoder-box"></div>
+        <div class="nav-links">
+            <span id="nav-all">ყველა</span>
+            <span id="nav-hotels">სასტუმროები</span>
+        </div>
     </div>
 
     <div class="right-controls">
@@ -97,9 +109,7 @@
     </div>
 
     <div id="authModal">
-        <div class="close-btn" onclick="toggleAuth()">
-            <span class="material-symbols-outlined" style="font-size: 22px;">close</span>
-        </div>
+        <div class="close-btn" onclick="toggleAuth()"><span class="material-symbols-outlined" style="font-size: 22px;">close</span></div>
         <h3 id="authTitle" style="margin:0; font-size: 18px; text-align: center; font-weight: 400;">მოგესალმებით</h3>
         <input type="email" id="email" class="modal-input" placeholder="ელ-ფოსტა" autocomplete="off">
         <input type="password" id="password" class="modal-input" placeholder="პაროლი" autocomplete="off">
@@ -124,6 +134,7 @@
         const auth = getAuth(app);
         let isLogin = true;
 
+        // Functions globally exposed
         window.toggleAuth = () => { const m = document.getElementById('authModal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; };
         window.switchAuth = () => { isLogin = !isLogin; document.getElementById('authTitle').innerText = isLogin ? 'მოგესალმებით' : 'რეგისტრაცია'; };
         window.handleAuth = async () => {
@@ -146,10 +157,30 @@
         const geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl, placeholder: 'ძებნა...', marker: false });
         document.getElementById('geocoder-box').appendChild(geocoder.onAdd(map));
 
-        window.toggleTheme = () => { document.body.classList.toggle('light-mode-active'); };
-        window.toggleLanguage = () => { const b = document.getElementById('langBtn'); b.innerText = b.innerText === 'GE' ? 'EN' : 'GE'; };
+        // Global controls
+        window.toggleTheme = () => { document.body.classList.toggle('light-mode-active'); document.getElementById('themeIcon').innerText = document.body.classList.contains('light-mode-active') ? 'dark_mode' : 'light_mode'; };
+        window.toggleLanguage = () => { 
+            const b = document.getElementById('langBtn'); 
+            b.innerText = b.innerText === 'GE' ? 'EN' : 'GE'; 
+            document.getElementById('nav-all').innerText = b.innerText === 'GE' ? 'ყველა' : 'ALL';
+            document.getElementById('nav-hotels').innerText = b.innerText === 'GE' ? 'სასტუმროები' : 'HOTELS';
+        };
         window.toggleAllLayers = (btn) => { const act = btn.classList.toggle('active'); ['admin', 'place', '3d-buildings'].forEach(t => applyVis(t, act ? 'visible' : 'none')); };
+        window.toggleSingleLayer = (t, b) => { const vis = b.classList.toggle('active') ? 'visible' : 'none'; applyVis(t, vis); };
         function applyVis(t, v) { map.getStyle().layers.forEach(l => { if ((t==='place' && l.id.includes('settlement')) || (t==='admin' && l.id.includes('admin')) || (t==='3d-buildings' && l.id==='3d-buildings')) map.setLayoutProperty(l.id, 'visibility', v); }); }
+
+        async function fetchWeather() {
+            const c = map.getCenter();
+            try {
+                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lng}&current_weather=true&hourly=relativehumidity_2m`);
+                const d = await r.json();
+                document.getElementById('btnTemp').innerText = `${Math.round(d.current_weather.temperature)}°`;
+                document.getElementById('widgetTemp').innerText = `${Math.round(d.current_weather.temperature)}°C`;
+                document.getElementById('humidity').innerText = `${d.hourly.relativehumidity_2m[0]}%`;
+            } catch (e) {}
+        }
+        map.on('moveend', fetchWeather); map.on('load', fetchWeather);
+        window.getUserLoc = (el) => { if (el.checked) { document.getElementById('slider-dot').style.transform = "translateX(14px)"; navigator.geolocation.getCurrentPosition(p => map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 15 })); } else document.getElementById('slider-dot').style.transform = "translateX(0)"; };
     </script>
 </body>
 </html>
