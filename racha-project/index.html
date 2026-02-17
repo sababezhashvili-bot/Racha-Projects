@@ -3,45 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map - Stable Master</title>
+    <title>Racha Map - Final Restoration</title>
+
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js'></script>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css' type='text/css' />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
     <style>
         @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap');
-        :root { --glass: rgba(255, 255, 255, 0.03); --glass-blur: blur(35px); --border: rgba(255, 255, 255, 0.12); --custom-green: #7fb069; }
-        body { margin: 0; padding: 0; font-family: "SF Pro Display", sans-serif; background: #000; overflow: hidden; color: #fff; }
+
+        :root {
+            --glass: rgba(255, 255, 255, 0.03) !important;
+            --glass-blur: blur(35px) saturate(180%) !important;
+            --border: rgba(255, 255, 255, 0.12) !important;
+            --custom-green: #7fb069 !important;
+        }
+
+        body { margin: 0; padding: 0; font-family: "SF Pro Display", "Noto Sans Georgian", sans-serif; background: #000; overflow: hidden; color: #fff; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; z-index: 1; }
-        .main-bar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 25; display: flex; align-items: center; background: var(--glass); backdrop-filter: var(--glass-blur); padding: 0 25px; border-radius: 100px; border: 0.5px solid var(--border); width: 90%; max-width: 1000px; height: 45px; justify-content: space-between; }
-        .btn-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--glass); backdrop-filter: var(--glass-blur); border: 0.5px solid var(--border); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .side-controls, .right-controls { position: absolute; top: 20px; z-index: 20; display: flex; flex-direction: column; gap: 10px; }
+
+        /* --- 🛑 UI Elements (Z-index fix) --- */
+        .main-bar {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; align-items: center; background: var(--glass);
+            backdrop-filter: var(--glass-blur); padding: 0 30px; border-radius: 100px;
+            border: 0.5px solid var(--border); width: 95%; max-width: 1000px; height: 42px;
+            justify-content: space-between; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.5);
+        }
+
+        .side-controls, .right-controls { position: absolute; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
         .side-controls { left: 15px; } .right-controls { right: 15px; }
-        #authModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; z-index: 100; display: none; flex-direction: column; gap: 15px; background: rgba(10,10,10,0.9); padding: 25px; border-radius: 25px; border: 1px solid var(--border); }
-        .modal-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 100px; color: #fff; outline: none; }
-        .custom-marker { width: 25px; height: 25px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5); cursor: pointer; }
+
+        .btn-circle {
+            width: 38px; height: 38px; border-radius: 50%; background: var(--glass);
+            backdrop-filter: var(--glass-blur); border: 0.5px solid var(--border);
+            color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+
+        .btn-circle.active { background: var(--custom-green) !important; border-color: var(--custom-green) !important; }
+
+        #geocoder-box { width: 250px; }
+        .mapboxgl-ctrl-geocoder { background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; border: none !important; width: 100% !important; box-shadow: none !important; }
+        .mapboxgl-ctrl-geocoder--input { color: #fff !important; font-size: 11px !important; }
+
+        .nav-links { display: flex; gap: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; align-items: center; }
+        .nav-links span { cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .nav-links span.active { opacity: 1; color: #fff; }
+
+        #authModal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 300px; z-index: 200; display: none; flex-direction: column; gap: 15px;
+            background: rgba(10,10,10,0.9); padding: 30px; border-radius: 25px; border: 1px solid var(--border);
+        }
+
+        .custom-marker { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.5); cursor: pointer; }
     </style>
 </head>
 <body>
+
     <div id="map"></div>
+
     <div class="side-controls">
         <button class="btn-circle" onclick="window.zoomIn()"><span class="material-symbols-outlined">add</span></button>
         <button class="btn-circle" onclick="window.zoomOut()"><span class="material-symbols-outlined">remove</span></button>
+        <button class="btn-circle" id="btn-3d" onclick="window.toggle3D()"><span class="material-symbols-outlined">apartment</span></button>
     </div>
+
     <div class="main-bar">
         <div id="geocoder-box"></div>
-        <div style="font-size: 12px; font-weight: bold; color: var(--custom-green);">RACHA MAP</div>
+        <div class="nav-links">
+            <span class="active" id="txt-all">ყველა</span>
+            <span id="txt-land">ღირსშესანიშნაობა</span>
+            <span id="txt-hot">სასტუმრო</span>
+        </div>
+        <div style="font-size: 10px; font-weight: 900; color: var(--custom-green); letter-spacing: 1px;">RACHA MAP</div>
     </div>
+
     <div class="right-controls">
         <button class="btn-circle" id="personBtn" onclick="window.toggleAuth()"><span class="material-symbols-outlined">person</span></button>
+        <button class="btn-circle" onclick="window.toggleLang()" id="langBtn" style="font-size: 11px; font-weight: 700;">GE</button>
     </div>
+
     <div id="authModal">
-        <input type="email" id="email" class="modal-input" placeholder="ელ-ფოსტა">
-        <input type="password" id="pass" class="modal-input" placeholder="პაროლი">
-        <button onclick="window.handleAuth()" style="background:var(--custom-green); color:white; border:none; padding:12px; border-radius:100px; cursor:pointer;">შესვლა</button>
-        <button onclick="window.toggleAuth()" style="background:none; color:white; border:none; cursor:pointer; font-size:12px;">დახურვა</button>
+        <div style="text-align:right; cursor:pointer;" onclick="window.toggleAuth()"><span class="material-symbols-outlined">close</span></div>
+        <input type="email" id="email" style="padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" placeholder="Email">
+        <input type="password" id="pass" style="padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:#fff;" placeholder="Password">
+        <button onclick="window.handleAuth()" style="background:var(--custom-green); border:none; padding:12px; border-radius:10px; color:#fff; font-weight:bold; cursor:pointer;">შესვლა</button>
     </div>
 
     <script type="module">
@@ -55,9 +105,9 @@
         const db = getFirestore(app);
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FidWthNjI5IiwiYSI6ImNtbHBza2JqcDFjZ2EzZ3F4YjVuN3EwMmoifQ.V6q1KO4tol7QefPr8PQFxQ';
-        const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/satellite-streets-v12', center: [43.1481, 42.5176], zoom: 11 });
+        const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/satellite-streets-v12', center: [43.08017, 42.51290], zoom: 12, pitch: 45 });
 
-        // 🛑 მარკერების წამოღება Firestore-დან
+        // 🛑 მარკერების ავტომატური ჩატვირთვა
         map.on('load', () => {
             onSnapshot(collection(db, "locations"), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -66,27 +116,40 @@
                         const el = document.createElement('div');
                         el.className = 'custom-marker';
                         el.style.backgroundColor = data.category === 'hotel' ? '#7fb069' : '#ffcc00';
-                        new mapboxgl.Marker(el).setLngLat([data.lng, data.lat]).setPopup(new mapboxgl.Popup().setHTML(`<b>${data.name}</b>`)).addTo(map);
+                        new mapboxgl.Marker(el).setLngLat([data.lng, data.lat]).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<b>${data.name}</b><p>${data.description}</p>`)).addTo(map);
                     }
                 });
             });
+            
+            // 3D Terrain
+            map.addSource('mapbox-dem', { 'type': 'raster-dem', 'url': 'mapbox://mapbox.mapbox-terrain-dem-v1', 'tileSize': 512 });
+            map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
         });
 
-        // 🛑 Auth ლოგიკა
+        // 🛑 ფუნქციონალი
+        window.zoomIn = () => map.zoomIn();
+        window.zoomOut = () => map.zoomOut();
+        window.toggleAuth = () => { const m = document.getElementById('authModal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; };
+        window.toggle3D = () => { const pitch = map.getPitch() > 0 ? 0 : 60; map.easeTo({ pitch }); document.getElementById('btn-3d').classList.toggle('active'); };
+
         onAuthStateChanged(auth, async (user) => {
             const pBtn = document.getElementById('personBtn');
             if (user) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const userDoc = await getDoc(doc(doc(db, "users", user.uid)));
                 if (userDoc.exists() && userDoc.data().role === "admin") {
-                    pBtn.style.background = "var(--custom-green)";
+                    pBtn.style.backgroundColor = "var(--custom-green)";
                     pBtn.onclick = () => { if(confirm("ადმინ პანელში გადასვლა?")) window.location.href = "admin.html"; };
                 }
             }
         });
 
-        window.toggleAuth = () => { const m = document.getElementById('authModal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; };
-        window.handleAuth = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value); window.toggleAuth(); } catch(e) { alert("შეცდომა!"); } };
-        window.zoomIn = () => map.zoomIn(); window.zoomOut = () => map.zoomOut();
+        window.handleAuth = async () => {
+            try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value); window.toggleAuth(); }
+            catch(e) { alert("შეცდომა შესვლისას!"); }
+        };
+
+        const geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl, marker: false });
+        document.getElementById('geocoder-box').appendChild(geocoder.onAdd(map));
     </script>
 </body>
 </html>
