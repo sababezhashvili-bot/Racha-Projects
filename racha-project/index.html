@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ka">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map Explorer - Clean Pro</title>
-
+    <title>Racha Map Explorer - UI Stability</title>
+    
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js'></script>
@@ -16,7 +16,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap');
 
         :root {
-            --glass: rgba(10, 10, 10, 0.35);
+            --glass: rgba(10, 10, 10, 0.35); 
             --border: rgba(255, 255, 255, 0.12);
             --text: #ffffff;
             --font-eng: "SF Pro Display", -apple-system, sans-serif;
@@ -30,177 +30,62 @@
             --text: #1d1d1f;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-geo) !important;
-            background: #000;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+        body { margin: 0; padding: 0; font-family: var(--font-geo) !important; background: #000; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        body.lang-en { font-family: var(--font-eng) !important; }
 
-            body.lang-en {
-                font-family: var(--font-eng) !important;
-            }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; z-index: 1; }
+        .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
 
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* Mapbox UI Hidden */
-        .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right {
-            display: none !important;
-        }
-
-        /* --- UI Elements --- */
+        /* --- Main Bar --- */
         .main-bar {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--glass);
-            backdrop-filter: blur(40px) saturate(210%);
-            padding: 5px 10px 5px 15px;
-            border-radius: 100px;
-            border: 0.5px solid var(--border);
-            color: var(--text);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 10; display: flex; align-items: center; gap: 15px;
+            background: var(--glass); backdrop-filter: blur(40px) saturate(210%);
+            padding: 5px 10px 5px 15px; border-radius: 100px; border: 0.5px solid var(--border);
+            color: var(--text); box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             max-width: 90%;
         }
 
-        .mapboxgl-ctrl-geocoder {
-            background: rgba(255,255,255,0.08) !important;
-            border-radius: 100px !important;
-            width: 140px !important;
-            height: 28px !important;
-            display: flex !important;
-            align-items: center !important;
+        /* --- Search Geocoder Fix --- */
+        .mapboxgl-ctrl-geocoder { 
+            background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; 
+            width: 140px !important; height: 28px !important; display: flex !important; align-items: center !important;
+            box-shadow: none !important;
         }
-
-        .mapboxgl-ctrl-geocoder--input {
-            color: #fff !important;
-            padding: 0 25px !important;
-            height: 28px !important;
-            font-size: 10px !important;
-            font-weight: 500 !important;
-            font-family: inherit !important;
+        .mapboxgl-ctrl-geocoder--input { 
+            color: #fff !important; padding: 0 30px !important; height: 28px !important; 
+            font-size: 10px !important; font-weight: 500 !important; font-family: inherit !important;
         }
+        .mapboxgl-ctrl-geocoder--icon-search { left: 8px !important; top: 50% !important; transform: translateY(-50%) !important; width: 12px !important; fill: #fff !important; opacity: 0.5; }
+        
+        /* 🛑 X ღილაკის ფიქსი */
+        .mapboxgl-ctrl-geocoder--button { background: none !important; top: 0 !important; right: 5px !important; }
+        .mapboxgl-ctrl-geocoder--icon-close { fill: #fff !important; width: 14px !important; height: 14px !important; margin-top: 7px !important; }
 
-        .mapboxgl-ctrl-geocoder--icon-search {
-            left: 8px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            width: 12px !important;
-            fill: #fff !important;
-            opacity: 0.5;
+        /* 🛑 შემოთავაზებების (Suggestions) ფიქსი */
+        .mapboxgl-ctrl-geocoder .suggestions { 
+            background: var(--glass) !important; backdrop-filter: blur(30px) !important; 
+            border-radius: 15px !important; border: 0.5px solid var(--border) !important; 
+            margin-top: 10px !important; overflow: hidden !important; 
         }
+        .mapboxgl-ctrl-geocoder .suggestions > li > a { color: #fff !important; font-size: 10px !important; padding: 8px 12px !important; }
+        .mapboxgl-ctrl-geocoder .suggestions > .active > a, .mapboxgl-ctrl-geocoder .suggestions > li > a:hover { background: rgba(255,255,255,0.1) !important; }
 
-        .side-controls {
-            position: absolute;
-            top: 20px;
-            left: 15px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        /* --- Sidebar & Controls --- */
+        .side-controls { position: absolute; top: 20px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
+        .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex !important; align-items: center !important; justify-content: center !important; transition: 0.3s; padding: 0 !important; }
+        .btn-circle.active { background: var(--active-green) !important; color: white !important; }
 
-        .btn-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border: 0.5px solid var(--border);
-            color: var(--text);
-            cursor: pointer;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            transition: 0.3s;
-            padding: 0 !important;
-        }
+        .layer-group { position: relative; display: flex; align-items: center; }
+        .sub-layers { position: absolute; left: 42px; display: flex; gap: 6px; opacity: 0; visibility: hidden; transition: 0.4s; z-index: 11; }
+        .layer-group:hover .sub-layers { opacity: 1; visibility: visible; left: 48px; }
 
-            .btn-circle.active {
-                background: var(--active-green) !important;
-                color: white !important;
-            }
+        .weather-widget { position: absolute; left: 50px; top: 0; width: 110px; background: var(--glass); backdrop-filter: blur(35px); border-radius: 18px; padding: 10px; opacity: 0; visibility: hidden; transition: 0.4s; color: var(--text); }
+        .weather-container:hover .weather-widget { opacity: 1; visibility: visible; left: 55px; }
 
-        .layer-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .sub-layers {
-            position: absolute;
-            left: 42px;
-            display: flex;
-            gap: 6px;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.4s;
-            z-index: 11;
-        }
-
-        .layer-group:hover .sub-layers {
-            opacity: 1;
-            visibility: visible;
-            left: 48px;
-        }
-
-        .weather-widget {
-            position: absolute;
-            left: 50px;
-            top: 0;
-            width: 110px;
-            background: var(--glass);
-            backdrop-filter: blur(35px);
-            border-radius: 18px;
-            padding: 10px;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.4s;
-            color: var(--text);
-        }
-
-        .weather-container:hover .weather-widget {
-            opacity: 1;
-            visibility: visible;
-            left: 55px;
-        }
-
-        @media (max-width: 600px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mapboxgl-ctrl-geocoder {
-                width: 100px !important;
-            }
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'wght' 200;
-            font-size: 18px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 10px;
-            font-size: 10px;
-            font-weight: 600;
-            opacity: 0.8;
-        }
+        @media (max-width: 600px) { .nav-links { display: none; } .mapboxgl-ctrl-geocoder { width: 100px !important; } }
+        .material-symbols-outlined { font-variation-settings: 'wght' 200; font-size: 18px; }
+        .nav-links { display: flex; gap: 10px; font-size: 10px; font-weight: 600; opacity: 0.8; }
     </style>
 </head>
 
@@ -256,30 +141,22 @@
         const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/satellite-streets-v12', center: [43.1481, 42.5176], zoom: 11, pitch: 60, antialias: true });
 
         map.on('style.load', () => {
-            // 🏔️ 3D Terrain
             if (!map.getSource('mapbox-dem')) {
                 map.addSource('mapbox-dem', { 'type': 'raster-dem', 'url': 'mapbox://mapbox.mapbox-terrain-dem-v1', 'tileSize': 512, 'maxzoom': 14 });
                 map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.6 });
             }
-
-            // 🛑 ცისფერი კუბიკების (Shields) და სხვა ნაგვის მოცილება
+            
             const layers = map.getStyle().layers;
             layers.forEach(l => {
-                // ვთიშავთ ყველაფერს, რაც გზის ნიშნებს, ფონებს (shields) ან არასაჭირო სიმბოლოებს ჰგავს
-                if (l.type === 'symbol' && (l.id.includes('shield') || l.id.includes('road') || l.id.includes('highway') || l.id.includes('airport') || l.id.includes('transit'))) {
-                    map.setLayoutProperty(l.id, 'visibility', 'none');
-                }
-                // ვტოვებთ მხოლოდ დასახლებებს, თუ ისინი ჩართულია
-                if (!l.id.includes('settlement') && !l.id.includes('village') && (l.id.includes('poi') || l.id.includes('admin'))) {
+                if (l.type === 'symbol' && l.id.includes('shield')) {
                     map.setLayoutProperty(l.id, 'visibility', 'none');
                 }
             });
 
-            map.addLayer({ 'id': '3d-buildings', 'source': 'composite', 'source-layer': 'building', 'type': 'fill-extrusion', 'minzoom': 14, 'layout': { 'visibility': 'none' }, 'paint': { 'fill-extrusion-color': '#fff', 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-opacity': 0.7 } });
+            map.addLayer({ 'id': '3d-buildings', 'source': 'composite', 'source-layer': 'building', 'type': 'fill-extrusion', 'minzoom': 14, 'layout': {'visibility': 'none'}, 'paint': {'fill-extrusion-color': '#fff', 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-opacity': 0.7} });
             updateMapLanguage();
         });
 
-        // ენის და თემის ფუნქციები (უცვლელი)
         function toggleLanguage() {
             currentLang = currentLang === 'ka' ? 'en' : 'ka';
             document.body.classList.toggle('lang-en');
@@ -317,14 +194,14 @@
         }
 
         function toggleSingleLayer(type, btn) { const targetVis = btn.classList.contains('active') ? 'none' : 'visible'; applyVis(type, targetVis); btn.classList.toggle('active'); }
-        function applyVis(type, vis) {
-            map.getStyle().layers.forEach(l => {
-                if ((type === 'place' && (l.id.includes('settlement') || l.id.includes('village'))) ||
-                    (type === 'admin' && (l.id.includes('admin') || l.id.includes('boundary'))) ||
-                    (type === '3d-buildings' && l.id === '3d-buildings')) {
-                    map.setLayoutProperty(l.id, 'visibility', vis);
-                }
-            });
+        function applyVis(type, vis) { 
+            map.getStyle().layers.forEach(l => { 
+                if ((type === 'place' && (l.id.includes('settlement') || l.id.includes('village'))) || 
+                    (type === 'admin' && (l.id.includes('admin') || l.id.includes('boundary'))) || 
+                    (type === '3d-buildings' && l.id === '3d-buildings')) { 
+                    map.setLayoutProperty(l.id, 'visibility', vis); 
+                } 
+            }); 
         }
 
         async function fetchWeather() {
@@ -335,7 +212,7 @@
                 document.getElementById('btnTemp').innerText = `${Math.round(data.current_weather.temperature)}°`;
                 document.getElementById('widgetTemp').innerText = `${Math.round(data.current_weather.temperature)}°C`;
                 document.getElementById('humidity').innerText = `${data.hourly.relativehumidity_2m[0]}%`;
-            } catch (e) { }
+            } catch (e) {}
         }
         map.on('moveend', fetchWeather); map.on('load', fetchWeather);
 
