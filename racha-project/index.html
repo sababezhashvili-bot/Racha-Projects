@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map - Pro Auth</title>
+    <title>Racha Map Explorer - Professional Edition</title>
     
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
@@ -20,42 +20,51 @@
             --border: rgba(255, 255, 255, 0.12);
             --text: #ffffff;
             --font-geo: "Noto Sans Georgian", sans-serif;
+            --active-green: rgba(52, 199, 89, 0.45);
         }
 
-        body { margin: 0; padding: 0; font-family: var(--font-geo) !important; background: #000; overflow: hidden; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; z-index: 1; }
+        body { margin: 0; padding: 0; font-family: var(--font-geo) !important; background: #000; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; z-index: 1; }
         .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
 
         /* --- UI Elements --- */
-        .side-controls { position: absolute; top: 20px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
-        .right-controls { position: absolute; top: 20px; right: 15px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
-        .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .btn-circle.active { background: rgba(52, 199, 89, 0.45); }
-
-        /* --- Login Modal --- */
-        #authModal {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; padding: 30px; border-radius: 24px;
-            background: var(--glass); backdrop-filter: blur(50px); border: 0.5px solid var(--border);
-            z-index: 100; display: none; flex-direction: column; gap: 15px; color: #fff;
-        }
-        .modal-input {
-            background: rgba(255,255,255,0.05); border: 0.5px solid var(--border);
-            border-radius: 12px; padding: 12px; color: #fff; outline: none; font-size: 13px;
-        }
-        .modal-btn {
-            background: #fff; color: #000; border: none; padding: 12px; border-radius: 12px;
-            font-weight: 700; cursor: pointer; transition: 0.3s;
-        }
-        .modal-btn:hover { opacity: 0.8; }
-
-        /* --- Main Bar --- */
         .main-bar {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 10; display: flex; align-items: center; gap: 15px;
-            background: var(--glass); backdrop-filter: blur(40px);
+            background: var(--glass); backdrop-filter: blur(40px) saturate(210%);
             padding: 5px 15px; border-radius: 100px; border: 0.5px solid var(--border);
+            color: var(--text); box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
+
+        .side-controls { position: absolute; top: 20px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
+        .right-controls { position: absolute; top: 20px; right: 15px; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
+        
+        .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-circle.active { background: var(--active-green) !important; }
+
+        /* --- Auth Modal (The Glass Box) --- */
+        #authModal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 280px; padding: 30px; border-radius: 28px;
+            background: var(--glass); backdrop-filter: blur(60px); border: 0.5px solid var(--border);
+            z-index: 100; display: none; flex-direction: column; gap: 15px; color: #fff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .modal-input {
+            background: rgba(255,255,255,0.06); border: 0.5px solid var(--border);
+            border-radius: 14px; padding: 12px; color: #fff; outline: none; font-size: 13px;
+        }
+        .modal-btn {
+            background: #fff; color: #000; border: none; padding: 12px; border-radius: 14px;
+            font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 5px;
+        }
+
+        /* Search Box Customization */
+        .mapboxgl-ctrl-geocoder { background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; width: 140px !important; height: 28px !important; display: flex !important; align-items: center !important; box-shadow: none !important; }
+        .mapboxgl-ctrl-geocoder--input { color: #fff !important; padding: 0 30px !important; height: 28px !important; font-size: 10px !important; }
+        .mapboxgl-ctrl-geocoder--icon-search { left: 8px !important; fill: #fff !important; opacity: 0.5; }
+        .mapboxgl-ctrl-geocoder--button { background: none !important; }
+        .mapboxgl-ctrl-geocoder--icon-close { fill: #fff !important; margin-top: 5px !important; }
     </style>
 </head>
 <body>
@@ -67,27 +76,44 @@
         <button class="btn-circle" id="langBtn" onclick="toggleLanguage()" style="font-size: 10px; font-weight: 700;">GE</button>
     </div>
 
+    <div class="side-controls">
+        <button class="btn-circle" onclick="toggleTheme()"><span class="material-symbols-outlined" id="themeIcon">light_mode</span></button>
+        <button class="btn-circle"><span id="btnTemp" style="font-size: 11px; font-weight: 700;">--°</span></button>
+        <button class="btn-circle" id="masterLayerBtn" onclick="toggleAllLayers(this)"><span class="material-symbols-outlined">layers</span></button>
+        <button class="btn-circle" onclick="map.zoomIn()"><span class="material-symbols-outlined">add</span></button>
+        <button class="btn-circle" onclick="map.zoomOut()"><span class="material-symbols-outlined">remove</span></button>
+    </div>
+
+    <div class="main-bar">
+        <div style="display:flex; align-items:center; gap:6px; font-size:10px;">
+            Loc <label style="position:relative; display:inline-block; width:28px; height:14px;">
+                <input type="checkbox" onchange="getUserLoc(this)" style="opacity:0; width:0; height:0;"><span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.1); border-radius:34px; transition:.4s;"></span>
+                <span id="slider-dot" style="position:absolute; height:10px; width:10px; left:2px; bottom:2px; background:white; border-radius:50%; transition:.4s;"></span>
+            </label>
+        </div>
+        <div id="geocoder-box"></div>
+    </div>
+
     <div id="authModal">
-        <h3 id="authTitle" style="margin:0; font-size: 18px;">შესვლა</h3>
+        <h3 id="authTitle" style="margin:0; font-size: 18px; text-align: center;">შესვლა</h3>
         <input type="email" id="email" class="modal-input" placeholder="ელ-ფოსტა">
         <input type="password" id="password" class="modal-input" placeholder="პაროლი">
         <button class="modal-btn" onclick="handleAuth()">დადასტურება</button>
-        <p style="font-size: 10px; opacity: 0.6; text-align: center; cursor: pointer;" onclick="switchAuth()">არ გაქვს აქაუნთი? რეგისტრაცია</p>
+        <p style="font-size: 10px; opacity: 0.6; text-align: center; cursor: pointer; margin-top: 10px;" onclick="switchAuth()">არ გაქვს აქაუნთი? რეგისტრაცია</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // 🏔️ შენი Firebase Config
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAJbHfM7kT614kX9DBegyMQn1zALl6m23c",
             authDomain: "racha-map.firebaseapp.com",
             projectId: "racha-map",
             storageBucket: "racha-map.firebasestorage.app",
             messagingSenderId: "240476452622",
-            appId: "1:240476452622:web:c63b9a525740e235b3095f",
-            measurementId: "G-R1YEF831KD"
+            appId: "1:240476452622:web:c63b9a525740e235b3095f"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -115,20 +141,50 @@
             } catch (e) { alert("შეცდომა: " + e.message); }
         };
 
-        // 🗺️ Mapbox Setup
+        // Mapbox Setup
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FidWthNjI5IiwiYSI6ImNtbHBza2JqcDFjZ2EzZ3F4YjVuN3EwMmoifQ.V6q1KO4tol7QefPr8PQFxQ';
-        const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/satellite-streets-v12', center: [43.1481, 42.5176], zoom: 11, pitch: 60 });
+        const map = new mapboxgl.Map({ 
+            container: 'map', 
+            style: 'mapbox://styles/mapbox/satellite-streets-v12', 
+            center: [43.1481, 42.5176], 
+            zoom: 11, 
+            pitch: 60,
+            antialias: true 
+        });
 
         map.on('style.load', () => {
+            // 🛑 კუბიკების მოცილება
             const layers = map.getStyle().layers;
             layers.forEach(l => {
                 if (l.type === 'symbol' && l.id.includes('shield')) map.setLayoutProperty(l.id, 'visibility', 'none');
             });
+            
+            // 🏔️ 3D Terrain
             if (!map.getSource('mapbox-dem')) {
                 map.addSource('mapbox-dem', { 'type': 'raster-dem', 'url': 'mapbox://mapbox.mapbox-terrain-dem-v1', 'tileSize': 512 });
                 map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.6 });
             }
         });
+
+        // Search Box
+        const geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl, placeholder: 'ძებნა...', marker: false });
+        document.getElementById('geocoder-box').appendChild(geocoder.onAdd(map));
+
+        // Location toggle
+        window.getUserLoc = (el) => {
+            if (el.checked) {
+                document.getElementById('slider-dot').style.transform = "translateX(14px)";
+                navigator.geolocation.getCurrentPosition(pos => map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 15 }));
+            } else {
+                document.getElementById('slider-dot').style.transform = "translateX(0)";
+            }
+        };
+
+        // Theme Toggle
+        window.toggleTheme = () => {
+            const icon = document.getElementById('themeIcon');
+            icon.innerText = icon.innerText === 'light_mode' ? 'dark_mode' : 'light_mode';
+        };
     </script>
 </body>
 </html>
