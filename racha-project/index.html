@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Racha Map - Enhanced UI</title>
+    <title>Racha Map - Wide UI Edition</title>
     
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
@@ -38,29 +38,29 @@
         .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--glass); backdrop-filter: blur(25px); border: 0.5px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; padding: 0; }
         .btn-circle.active { background: var(--apple-green) !important; border-color: rgba(52, 199, 89, 0.4); }
 
-        /* --- 🛑 გაზრდილი და სტატიკური Main Bar --- */
+        /* --- 🛑 ორჯერ უფრო განიერი და დაბალი Main Bar --- */
         .main-bar { 
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%); 
-            z-index: 10; display: flex; align-items: center; gap: 15px; 
+            z-index: 10; display: flex; align-items: center; gap: 20px; 
             background: var(--glass); backdrop-filter: blur(40px); 
-            padding: 8px 25px; border-radius: 100px; border: 0.5px solid var(--border); 
-            color: var(--text); width: 380px; height: 32px; justify-content: space-between;
+            padding: 4px 25px; border-radius: 100px; border: 0.5px solid var(--border); 
+            color: var(--text); width: 640px; height: 28px; justify-content: space-between;
         }
 
-        /* --- 🛑 ლუპის სიმბოლოს ცენტრირება --- */
+        /* --- Geocoder Styles --- */
         .mapboxgl-ctrl-geocoder { 
             background: rgba(255,255,255,0.08) !important; border-radius: 100px !important; 
-            width: 160px !important; height: 28px !important; display: flex !important; 
+            width: 180px !important; height: 24px !important; display: flex !important; 
             align-items: center !important; justify-content: center !important; 
             box-shadow: none !important; position: relative !important;
         }
         .mapboxgl-ctrl-geocoder--input { 
             color: #fff !important; padding: 0 10px 0 35px !important; 
-            height: 100% !important; font-size: 11px !important; background: none !important;
+            height: 100% !important; font-size: 10px !important; background: none !important;
         }
         .mapboxgl-ctrl-geocoder--icon-search { 
             left: 12px !important; top: 50% !important; transform: translateY(-50%) !important; 
-            fill: #fff !important; width: 14px !important; height: 14px !important; opacity: 0.7;
+            fill: #fff !important; width: 12px !important; height: 12px !important; opacity: 0.7;
         }
 
         /* --- Auth Modal --- */
@@ -71,9 +71,10 @@
         .modal-btn:hover { background: var(--apple-green); border-color: rgba(52, 199, 89, 0.4); }
 
         .auth-links { display: flex; justify-content: space-between; padding: 0 15px; font-size: 9px; color: var(--text); opacity: 0.6; }
-        .nav-links { display: flex; gap: 12px; font-size: 10px; font-weight: 600; opacity: 0.8; }
+        .nav-links { display: flex; gap: 15px; font-size: 10px; font-weight: 600; opacity: 0.8; }
         .material-symbols-outlined { font-variation-settings: 'wght' 200; font-size: 18px; }
         
+        /* Sidebar Components */
         .layer-group { position: relative; display: flex; align-items: center; }
         .sub-layers { position: absolute; left: 42px; display: flex; gap: 6px; opacity: 0; visibility: hidden; transition: 0.4s; }
         .layer-group:hover .sub-layers { opacity: 1; visibility: visible; left: 48px; }
@@ -152,7 +153,7 @@
         window.switchAuth = () => { isLogin = !isLogin; updateAuthTexts(); };
 
         function updateAuthTexts() {
-            const btn = document.getElementById('authBtn'), forgot = document.getElementById('forgotText'), sw = document.getElementById('switchText');
+            const btn = document.getElementById('authBtn'), sw = document.getElementById('switchText'), forgot = document.getElementById('forgotText');
             btn.innerText = isLogin ? 'Login' : (currentLang === 'ka' ? 'რეგისტრაცია' : 'Sign Up');
             forgot.innerText = currentLang === 'ka' ? 'დაგავიწყდა პაროლი?' : 'Forgot Password?';
             sw.innerText = currentLang === 'ka' ? (isLogin ? 'რეგისტრაცია' : 'შესვლა') : (isLogin ? 'Sign Up' : 'Login');
@@ -176,6 +177,7 @@
         document.getElementById('geocoder-box').appendChild(geocoder.onAdd(map));
 
         window.toggleTheme = () => { document.body.classList.toggle('light-mode-active'); document.getElementById('themeIcon').innerText = document.body.classList.contains('light-mode-active') ? 'dark_mode' : 'light_mode'; };
+        
         window.toggleLanguage = () => { 
             currentLang = currentLang === 'ka' ? 'en' : 'ka';
             document.getElementById('langBtn').innerText = currentLang === 'ka' ? 'GE' : 'EN';
